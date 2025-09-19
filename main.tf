@@ -16,6 +16,21 @@ provider "auth0" {
   client_secret = var.auth0_client_secret
 }
 
+# Auth0 Tenant Configuration
+resource "auth0_tenant" "tenant" {
+  friendly_name      = var.tenant_friendly_name
+  support_email      = var.tenant_support_email
+  support_url        = var.tenant_support_url
+  default_audience   = var.tenant_default_audience
+  default_directory  = "Username-Password-Authentication"
+}
+
+# Custom Domain Configuration
+resource "auth0_custom_domain" "domain" {
+  domain = var.custom_domain_name
+  type   = var.custom_domain_type
+}
+
 # Auth0 Application (SPA - Single Page Application)
 resource "auth0_client" "spa_app" {
   name                = var.spa_app_name

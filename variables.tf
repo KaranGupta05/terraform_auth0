@@ -4,6 +4,30 @@ variable "auth0_domain" {
   type        = string
 }
 
+# Tenant Configuration Variables
+variable "tenant_friendly_name" {
+  description = "Friendly name for the Auth0 tenant"
+  type        = string
+  default     = "My Auth0 Tenant"
+}
+
+variable "tenant_support_email" {
+  description = "Support email for the Auth0 tenant"
+  type        = string
+}
+
+variable "tenant_support_url" {
+  description = "Support URL for the tenant"
+  type        = string
+  default     = ""
+}
+
+variable "tenant_default_audience" {
+  description = "Default audience for the tenant"
+  type        = string
+  default     = ""
+}
+
 variable "auth0_client_id" {
   description = "Auth0 Management API client ID"
   type        = string
@@ -45,6 +69,18 @@ variable "spa_logout_urls" {
     "http://localhost:3000",
     "https://yourapp.com"
   ]
+}
+
+# Custom Domain Configuration
+variable "custom_domain_name" {
+  description = "Custom domain name for Auth0 tenant (e.g., auth.yourdomain.com)"
+  type        = string
+}
+
+variable "custom_domain_type" {
+  description = "Type of custom domain verification (auth0_managed_certs or self_managed_certs)"
+  type        = string
+  default     = "auth0_managed_certs"
 }
 
 variable "spa_allowed_origins" {
