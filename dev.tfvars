@@ -1,9 +1,14 @@
 # Development environment
-auth0_domain        = "dev-tenant.auth0.com"
-auth0_client_id     = "dev_management_api_client_id"
-auth0_client_secret = "dev_management_api_client_secret"
+auth0_domain        = "dev-ttiw0oehq6nnv2jk.us.auth0.com"
+auth0_client_id     = "oKs0PcU5MhzDnKQqalf1xQKYLE4YsCOK"
+auth0_client_secret = "M5aaGAZTJG4-tD7rMQMBECk9TWUHDrAMG0wCRFyFvYqOoIskj7juIdtj5BBUDpdB"
 
 project_name = "my-app-dev-1"
+
+# Tenant Configuration
+tenant_friendly_name = "My App (Development)"
+tenant_support_email = "support@cdw-test.com"
+#custom_domain_name = "auth.cdw-test.com"
 
 spa_app_name = "My App (Development)"
 spa_callbacks = [

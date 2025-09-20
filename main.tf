@@ -27,6 +27,7 @@ resource "auth0_tenant" "tenant" {
 
 # Custom Domain Configuration
 resource "auth0_custom_domain" "domain" {
+  count  = var.custom_domain_name != "" ? 1 : 0
   domain = var.custom_domain_name
   type   = var.custom_domain_type
 }
@@ -125,7 +126,7 @@ resource "auth0_client_grant" "api_grant" {
 
 # Auth0 Connection (Database)
 resource "auth0_connection" "database" {
-  name     = "${var.project_name}-database"
+  name     = replace(lower("${var.project_name}-db"), " ", "-")
   strategy = "auth0"
   
   options {

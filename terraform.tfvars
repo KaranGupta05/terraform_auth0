@@ -13,7 +13,7 @@ project_name = "cdw-first-terraform-project"
 
 tenant_friendly_name = "VINAY FST CCOMPANY"
 tenant_support_email = "support@cdw-test.com"
-custom_domain_name = "auth.cdw-test.com"
+#custom_domain_name = "auth.cdw-test.com"
 
 # SPA Application Configuration
 spa_app_name = "My CDW Account"
