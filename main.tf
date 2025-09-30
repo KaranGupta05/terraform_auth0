@@ -21,68 +21,106 @@ resource "auth0_tenant" "tenant" {
   friendly_name      = var.tenant_friendly_name
   support_email      = var.tenant_support_email
   support_url        = var.tenant_support_url
-  default_audience   = var.tenant_default_audience
-  default_directory  = "Username-Password-Authentication"
+  #default_audience   = var.tenant_default_audience
+  #default_directory  = "Username-Password-Authentication"
+  #Logo URL
+  picture_url        = "https://www.shutterstock.com/shutterstock/photos/2174926871/display_1500/stock-vector-circle-line-simple-design-logo-blue-format-jpg-png-eps-2174926871.jpg"
+  
+   # Set Idle Session Lifetime (in minutes)
+  idle_session_lifetime  = 24  # 1 day
+
+  # Set Maximum Session Lifetime (in minutes)
+  session_lifetime       = 480 # 20 days
+  
+  # Session cookie persistence policy: "persistent" or "non_persistent"
+  # session_cookie is not a supported argument, removed
+}
+
+#Authentication Profile Configuration
+resource "auth0_prompt" "tenant_prompt" {
+  universal_login_experience = "new"
+  identifier_first           = true
 }
 
 # Custom Domain Configuration
-resource "auth0_custom_domain" "domain" {
-  count  = var.custom_domain_name != "" ? 1 : 0
-  domain = var.custom_domain_name
-  type   = var.custom_domain_type
-}
+#resource "auth0_custom_domain" "domain" {
+#  count  = var.custom_domain_name != "" ? 1 : 0
+#  domain = var.custom_domain_name
+#  type   = var.custom_domain_type
+#}
 
-# Auth0 Application (SPA - Single Page Application)
-resource "auth0_client" "spa_app" {
-  name                = var.spa_app_name
-  description         = "Single Page Application for ${var.project_name}"
-  app_type            = "spa"
-  callbacks           = var.spa_callbacks
-  allowed_logout_urls = var.spa_logout_urls
-  allowed_origins     = var.spa_allowed_origins
-  web_origins         = var.spa_web_origins
-  oidc_conformant     = true
+# Attack Protection
+resource "auth0_attack_protection" "breached_password_detection" {
+  breached_password_detection {
+    enabled = true
+    method  = "enhanced" # Use "enhanced" for Credential Guard, otherwise "standard" for regular public breach lists
+
+    shields = [
+      "block",
+      "admin_notification",
+      # "user_notification" # Add only if you want users notified directly
+    ]
+
+    admin_notification_frequency = ["immediately"] # Can also be "daily", "weekly", or "monthly"
+
+    # Optionally enable/disable user notifications:
+    # user_notification_enabled = false   # Only if provider supports this option
+
+    # Example: disable user notification for compromised credentials
+    # You may need to use management API for fine-grained settings if this option is not exposed in the provider
+  }
   
-  jwt_configuration {
-    lifetime_in_seconds = 36000
-    secret_encoded      = true
-    alg                 = "RS256"
+  brute_force_protection {
+    enabled = true                # Enable brute-force protection
+    shields = ["block", "user_notification"]    # Block login attempts, send notification to the user
+
+    # threshold is not specified so it uses Auth0's default (recommended for most cases)
+    # If you need to customize: 
+    # threshold = <number of allowed attempts before account is blocked>
   }
-
-  refresh_token {
-    expiration_type = "expiring"
-    leeway          = 0
-    token_lifetime  = 2592000
-    idle_token_lifetime = 1296000
-    infinite_token_lifetime = false
-    infinite_idle_token_lifetime = false
-    rotation_type = "rotating"
-  }
-
-  grant_types = [
-    "authorization_code",
-    "refresh_token"
-  ]
-}
-
-# Auth0 Application (API/Backend)
-resource "auth0_client" "api_app" {
-  name        = var.api_app_name
-  description = "API Application for ${var.project_name}"
-  app_type    = "non_interactive"
   
-  jwt_configuration {
-    lifetime_in_seconds = 36000
-    secret_encoded      = true
-    alg                 = "RS256"
+  suspicious_ip_throttling {
+    enabled = true
+    shields = ["block", "admin_notification"]  # Block and send notifications to admins
+    # By not specifying thresholds, Auth0 default thresholds are used.
   }
-
-  grant_types = [
-    "client_credentials"
-  ]
 }
 
-# Auth0 Resource Server (API)
+
+# Branding configuration
+resource "auth0_branding" "tenant_branding" {
+  logo_url = "https://www.shutterstock.com/shutterstock/photos/2174926871/display_1500/stock-vector-circle-line-simple-design-logo-blue-format-jpg-png-eps-2174926871.jpg"
+
+  colors {
+    primary          = "#123456"     # Primary color
+    page_background  = "#f4f4f4"     # Page background color
+  }
+}
+
+# Enable custom email provider
+resource "auth0_email_provider" "custom_provider" {
+  name      = "smtp"
+  default_from_address = "no-reply@yourdomain.com"
+  credentials {
+  smtp_host   = var.smtp_host
+  smtp_port   = var.smtp_port
+  smtp_user   = var.smtp_user
+  smtp_pass   = var.smtp_pass
+  }
+}
+
+# Email template example - Reset Password
+resource "auth0_email_template" "reset_password" {
+  depends_on = [auth0_email_provider.custom_provider]
+  template        = "reset_email"  # Email template identifier
+  subject         = "Reset your password"
+  from            = "no-reply@yourdomain.com"
+  body            = "Click the link to reset your password." # Replace with file() if the file exists
+  syntax          = "liquid"
+  enabled         = true
+}
+
+# Add missing resource server resource
 resource "auth0_resource_server" "api" {
   name       = var.api_name
   identifier = var.api_identifier
@@ -93,118 +131,33 @@ resource "auth0_resource_server" "api" {
   skip_consent_for_verifiable_first_party_clients = true
 }
 
-# Auth0 Resource Server Scopes
-resource "auth0_resource_server_scopes" "api_scopes" {
-  resource_server_identifier = auth0_resource_server.api.identifier
-  
-  scopes {
-    name        = "read:users"
-    description = "Read user information"
+#Log Stream Configuration
+resource "auth0_log_stream" "splunk_cribl" {
+  name   = "Cribl"
+  type   = "splunk"
+  status = "active"
+
+  sink {
+    splunk_domain = "default.main.dreamy-moore-3stzf1x.cribl.cloud"
+    splunk_port   = 20001
+    splunk_token  = "<Your Cribl/Splunk Event Collector Token>"
+    splunk_tls    = true
   }
-  
-  scopes {
-    name        = "write:users"
-    description = "Write user information"
-  }
-  
-  scopes {
-    name        = "admin"
-    description = "Administrator access"
-  }
+
+  # Prioritized logs disabled (default)
+  # No filter needed for "All"
 }
 
-# Auth0 Client Grant (API permissions)
-resource "auth0_client_grant" "api_grant" {
-  client_id = auth0_client.api_app.id
-  audience  = auth0_resource_server.api.identifier
-  
-  scopes = [
-    "read:users",
-    "write:users"
-  ]
-}
 
-# Auth0 Connection (Database)
-resource "auth0_connection" "database" {
-  name     = replace(lower("${var.project_name}-db"), " ", "-")
-  strategy = "auth0"
-  
-  options {
-    password_policy                = "good"
-    password_history {
-      enable = true
-      size   = 5
-    }
-    password_no_personal_info {
-      enable = true
-    }
-    password_dictionary {
-      enable     = true
-      dictionary = ["password", "admin", "123456"]
-    }
-    password_complexity_options {
-      min_length = 8
-    }
-    enabled_database_customization = true
-    brute_force_protection         = true
-    import_mode                    = false
-    disable_signup                 = false
-    requires_username              = false
-  }
-}
-
-# Enable connection for SPA application
-resource "auth0_connection_clients" "spa_connection" {
-  connection_id = auth0_connection.database.id
-  enabled_clients = [
-    auth0_client.spa_app.id
-  ]
-}
-
-# Auth0 Role - Admin
+# Add missing role resources
 resource "auth0_role" "admin" {
   name        = "Admin"
   description = "Administrator role with full access"
 }
 
-# Auth0 Role - User
 resource "auth0_role" "user" {
   name        = "User"
   description = "Standard user role"
-}
-
-# Auth0 Role Permissions - Admin
-resource "auth0_role_permissions" "admin_permissions" {
-  role_id = auth0_role.admin.id
-  
-  permissions {
-    resource_server_identifier = auth0_resource_server.api.identifier
-    name                      = "admin"
-  }
-  
-  permissions {
-    resource_server_identifier = auth0_resource_server.api.identifier
-    name                      = "read:users"
-  }
-  
-  permissions {
-    resource_server_identifier = auth0_resource_server.api.identifier
-    name                      = "write:users"
-  }
-  
-  depends_on = [auth0_resource_server_scopes.api_scopes]
-}
-
-# Auth0 Role Permissions - User
-resource "auth0_role_permissions" "user_permissions" {
-  role_id = auth0_role.user.id
-  
-  permissions {
-    resource_server_identifier = auth0_resource_server.api.identifier
-    name                      = "read:users"
-  }
-  
-  depends_on = [auth0_resource_server_scopes.api_scopes]
 }
 
 # Auth0 Action (Login Flow)

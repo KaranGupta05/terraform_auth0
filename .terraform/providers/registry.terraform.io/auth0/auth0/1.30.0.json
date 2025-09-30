@@ -1,0 +1,10 @@
+{
+  "archives": {
+    "windows_amd64": {
+      "hashes": [
+        "h1:xtdzFqqbh2BdmhvrAAb57nvn2F2BSZILlVRVv55TXDY="
+      ],
+      "url": "terraform-provider-auth0_1.30.0_windows_amd64.zip"
+    }
+  }
+}

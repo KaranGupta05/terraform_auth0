@@ -1,18 +1,34 @@
-# Auth0 Configuration Variables
-variable "auth0_domain" {
-  description = "Auth0 tenant domain"
-  type        = string
-}
-
-# Tenant Configuration Variables
 variable "tenant_friendly_name" {
   description = "Friendly name for the Auth0 tenant"
   type        = string
-  default     = "My Auth0 Tenant"
 }
 
 variable "tenant_support_email" {
   description = "Support email for the Auth0 tenant"
+  type        = string
+}
+
+variable "smtp_host" {
+  description = "SMTP host for custom email provider"
+  type        = string
+}
+
+variable "smtp_port" {
+  description = "SMTP port for custom email provider"
+  type        = number
+}
+
+variable "smtp_user" {
+  description = "SMTP username for custom email provider"
+  type        = string
+}
+variable "smtp_pass" {
+  description = "SMTP password for custom email provider"
+  type        = string
+  sensitive   = true
+}
+variable "auth0_domain" {
+  description = "Auth0 tenant domain"
   type        = string
 }
 
@@ -72,16 +88,17 @@ variable "spa_logout_urls" {
 }
 
 # Custom Domain Configuration
-variable "custom_domain_name" {
-  description = "Custom domain name for Auth0 tenant (e.g., auth.yourdomain.com)"
-  type        = string
-}
+#variable "custom_domain_name" {
+#  description = "Custom domain name for Auth0 tenant (e.g., auth.yourdomain.com)"
+#  type        = string
+#}
+#
+#variable "custom_domain_type" {
+#  description = "Type of custom domain verification (auth0_managed_certs or self_managed_certs)"
+#  type        = string
+#  default     = "auth0_managed_certs"
+#}
 
-variable "custom_domain_type" {
-  description = "Type of custom domain verification (auth0_managed_certs or self_managed_certs)"
-  type        = string
-  default     = "auth0_managed_certs"
-}
 
 variable "spa_allowed_origins" {
   description = "Allowed origins for SPA"
@@ -133,9 +150,4 @@ variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
   default     = "dev"
-  
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "Environment must be one of: dev, staging, prod."
-  }
 }
