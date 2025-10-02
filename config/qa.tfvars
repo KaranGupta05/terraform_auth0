@@ -1,11 +1,11 @@
 # Staging environment
-auth0_domain        = "dev-fimbrzye0161xm5f.us.auth0.com"
-auth0_client_id     = "bl6gTEatijSPH9JeiwJ0pwqNJwrM0eaW"
-auth0_client_secret = "F5RPxpq2CXv8zWW7jK3AOPbDS5zYryzng5qZsT1l6Vok49FpBuwvYrYZZnCYboUw"
+auth0_domain        = "sdfdsf"
+auth0_client_id     = "dsfdsf"
+auth0_client_secret = "dsfdsf"
 
 # Tenant Configuration
 tenant_friendly_name = "CDW"
-tenant_support_email = "support@CDW.com"
+tenant_support_email = "dsfdsf"
 
 environment = "qa"
 

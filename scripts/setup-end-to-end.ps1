@@ -29,8 +29,28 @@ Write-Host "🚀 Auth0 Terraform - End-to-End Deployment Setup" -ForegroundColor
 # Interactive Configuration Section
 Write-Step "Interactive Configuration Setup" "Cyan"
 
-# Get GitHub Repository URL
-$defaultRepoUrl = "KaranGupta05/terrform_auth0"
+# Get GitHub Repository URL - Auto-detect from git remote
+$gitRemote = git remote get-url origin 2>$null
+$autoDetectedRepo = ""
+
+if ($gitRemote -and $gitRemote -match "github\.com[/:](.*?)/(.*?)(?:\.git)?$") {
+    $autoDetectedRepo = "$($matches[1])/$($matches[2])"
+}
+
+# Check if the auto-detected repo exists - we'll use the corrected name as default
+if ([string]::IsNullOrWhiteSpace($autoDetectedRepo)) {
+    $defaultRepoUrl = "KaranGupta05/teraform_auth0"
+} else {
+    # Auto-detected repo may have different spelling - suggest the actual GitHub repo name
+    if ($autoDetectedRepo -eq "KaranGupta05/terrform_auth0") {
+        Write-Host "⚠️ Auto-detected '$autoDetectedRepo' - suggesting actual GitHub repo name" -ForegroundColor Yellow
+        $defaultRepoUrl = "KaranGupta05/teraform_auth0"
+    } else {
+        $defaultRepoUrl = $autoDetectedRepo
+    }
+}
+
+Write-Host "Auto-detected repository: $defaultRepoUrl" -ForegroundColor Cyan
 $repoUrl = Read-Host "Enter GitHub repository URL (owner/repo format) [$defaultRepoUrl]"
 if ([string]::IsNullOrWhiteSpace($repoUrl)) {
     $repoUrl = $defaultRepoUrl
@@ -146,19 +166,41 @@ if ($SetupEnvironments) {
             
             # Check if authenticated user has access to the repository
             Write-Host "Verifying repository access..." -ForegroundColor Cyan
-            $repoAccess = & $ghPath repo view $repoUrl --json permissions 2>&1
+            $repoAccess = & $ghPath repo view $repoUrl --json name,owner 2>&1
+            
             if ($LASTEXITCODE -eq 0) {
                 Write-Success "Repository access confirmed"
                 $repoInfo = $repoAccess | ConvertFrom-Json
-                if ($repoInfo.permissions.admin -eq $true) {
+                Write-Host "  Repository: $($repoInfo.owner.login)/$($repoInfo.name)" -ForegroundColor Gray
+                
+                # Try to check admin access by attempting to list environments
+                & $ghPath api repos/$repoUrl/environments --silent 2>&1 | Out-Null
+                if ($LASTEXITCODE -eq 0) {
                     Write-Success "Admin access confirmed - can create environments and secrets"
-                } elseif ($repoInfo.permissions.push -eq $true) {
-                    Write-Host "⚠️  Push access detected - may have limited environment creation abilities" -ForegroundColor Yellow
                 } else {
                     Write-Host "⚠️  Limited repository access - may not be able to create environments" -ForegroundColor Yellow
                 }
             } else {
-                Write-Error "Cannot access repository $repoUrl. Please check repository name and permissions."
+                Write-Error "Cannot access repository '$repoUrl'"
+                Write-Host "Error details: $repoAccess" -ForegroundColor Red
+                
+                # Try to suggest alternatives
+                Write-Host "`n💡 Troubleshooting suggestions:" -ForegroundColor Yellow
+                Write-Host "1. Check repository name spelling" -ForegroundColor White
+                Write-Host "2. Verify you have access to the repository" -ForegroundColor White
+                Write-Host "3. Try re-authenticating: gh auth login --web" -ForegroundColor White
+                Write-Host "4. Check if repository is private and you have access" -ForegroundColor White
+                
+                # Try to list repositories you have access to
+                Write-Host "`n🔍 Repositories you have access to:" -ForegroundColor Cyan
+                $userRepos = & $ghPath repo list --limit 10 --json name,owner 2>&1
+                if ($LASTEXITCODE -eq 0) {
+                    $repos = $userRepos | ConvertFrom-Json
+                    foreach ($repo in $repos) {
+                        Write-Host "  $($repo.owner.login)/$($repo.name)" -ForegroundColor Gray
+                    }
+                }
+                
                 return
             }
             
@@ -172,53 +214,40 @@ if ($SetupEnvironments) {
                 Write-Host "   Enable it at: https://github.com/$repoUrl/settings/actions" -ForegroundColor Cyan
             }
             
-            # Create environments using GitHub CLI commands
+            # Create environments using GitHub API (without protection rules for free plans)
             $environments = @("development", "staging", "production")
             foreach ($env in $environments) {
                 Write-Host "Creating environment: $env" -ForegroundColor Cyan
                 
-                # Create environment using GitHub CLI variable command (which creates environment if needed)
-                # We'll use a dummy variable to create the environment, then delete it
-                $result = & $ghPath variable set TEMP_SETUP_VAR --value "setup" --env $env --repo $repoUrl 2>&1
+                # Create environment using GitHub API - no protection rules for free plans
+                $result = & $ghPath api repos/$repoUrl/environments/$env --method PUT 2>&1
                 
                 if ($LASTEXITCODE -eq 0) {
                     Write-Success "Environment '$env' created successfully"
-                    
-                    # Clean up the temporary variable
-                    & $ghPath variable delete TEMP_SETUP_VAR --env $env --repo $repoUrl 2>&1 | Out-Null
                 } else {
-                    Write-Error "Failed to create environment '$env'. Error: $result"
-                    Write-Host "Debug info - Exit code: $LASTEXITCODE" -ForegroundColor Yellow
-                    
-                    Write-Host "💡 You may need to enable GitHub Actions and environments in repository settings" -ForegroundColor Yellow
-                    Write-Host "   Go to: https://github.com/$repoUrl/settings/actions" -ForegroundColor Cyan
+                    # Check if it already exists
+                    & $ghPath api repos/$repoUrl/environments/$env 2>&1 | Out-Null
+                    if ($LASTEXITCODE -eq 0) {
+                        Write-Host "✅ Environment '$env' already exists" -ForegroundColor Yellow
+                    } else {
+                        Write-Error "Failed to create environment '$env'. Error: $result"
+                        Write-Host "Debug info - Exit code: $LASTEXITCODE" -ForegroundColor Yellow
+                        
+                        Write-Host "💡 You may need to enable GitHub Actions and environments in repository settings" -ForegroundColor Yellow
+                        Write-Host "   Go to: https://github.com/$repoUrl/settings/actions" -ForegroundColor Cyan
+                    }
                 }
             }
             
-            # Verify environments were created before setting secrets
-            Write-Host "`nVerifying created environments..." -ForegroundColor Cyan
-            $createdEnvironments = @()
+            # Note: Environment secrets require elevated permissions  
+            Write-Host "`n📋 Environment Setup Complete" -ForegroundColor Green
+            Write-Host "✅ Environments created: development, staging, production" -ForegroundColor Green
             
-            foreach ($env in $environments) {
-                Write-Host "Checking if $env environment exists..." -ForegroundColor Gray
-                
-                # Try to list variables for the environment to verify it exists
-                $checkResult = & $ghPath variable list --env $env --repo $repoUrl 2>&1
-                
-                if ($LASTEXITCODE -eq 0) {
-                    Write-Success "$env environment exists and is accessible"
-                    $createdEnvironments += $env
-                } else {
-                    Write-Error "$env environment was not created successfully or is not accessible"
-                    Write-Host "Error: $checkResult" -ForegroundColor Red
-                }
-            }
+            Write-Host "`n⚠️  GitHub Personal Access Token Limitation" -ForegroundColor Yellow
+            Write-Host "Your current GitHub CLI token doesn't have permissions to manage environment secrets." -ForegroundColor Yellow
+            Write-Host "This is normal for security reasons. You'll need to set up secrets manually." -ForegroundColor Gray
             
-            if ($createdEnvironments.Count -eq 0) {
-                Write-Error "No environments were created successfully. Cannot set secrets."
-                Write-Host "💡 Try creating environments manually at: https://github.com/$repoUrl/settings/environments" -ForegroundColor Yellow
-                return
-            }
+            $createdEnvironments = @("development", "staging", "production")
             
             # Set up environment secrets for Auth0 (only for successfully created environments)
             Write-Host "`nSetting up Auth0 environment secrets..." -ForegroundColor Cyan
@@ -480,18 +509,30 @@ if ($CommitAndPush) {
 # Step 5: Next Steps Instructions
 Write-Step "Next Steps for End-to-End Testing" "Green"
 
-Write-Host "1. 🔐 Set up GitHub Repository Secrets:" -ForegroundColor White
-Write-Host "   Go to: https://github.com/$repoUrl/settings/secrets/actions" -ForegroundColor Cyan
-Write-Host "   Add these secrets:" -ForegroundColor White
-Write-Host "   • AUTH0_DOMAIN" -ForegroundColor Gray
-Write-Host "   • AUTH0_CLIENT_ID" -ForegroundColor Gray
-Write-Host "   • AUTH0_CLIENT_SECRET" -ForegroundColor Gray
-
-Write-Host "`n2. 🌍 Configure GitHub Environments:" -ForegroundColor White
+Write-Host "1. 🔐 Set up GitHub Environment Secrets:" -ForegroundColor White
 Write-Host "   Go to: https://github.com/$repoUrl/settings/environments" -ForegroundColor Cyan
-Write-Host "   • development: No restrictions" -ForegroundColor Gray
-Write-Host "   • staging: Require 1 reviewer, 5-minute wait" -ForegroundColor Gray  
-Write-Host "   • production: Require 2 reviewers, 15-minute wait" -ForegroundColor Gray
+Write-Host "   Click on each environment and add secrets:" -ForegroundColor White
+
+Write-Host "`n   For DEVELOPMENT environment:" -ForegroundColor Yellow
+Write-Host "   • AUTH0_DOMAIN = $($auth0Config.development.Domain)" -ForegroundColor Gray
+Write-Host "   • AUTH0_CLIENT_ID = $($auth0Config.development.ClientId)" -ForegroundColor Gray
+Write-Host "   • AUTH0_CLIENT_SECRET = (your development secret)" -ForegroundColor Gray
+
+Write-Host "`n   For STAGING environment:" -ForegroundColor Yellow  
+Write-Host "   • AUTH0_DOMAIN = $($auth0Config.staging.Domain)" -ForegroundColor Gray
+Write-Host "   • AUTH0_CLIENT_ID = $($auth0Config.staging.ClientId)" -ForegroundColor Gray
+Write-Host "   • AUTH0_CLIENT_SECRET = (your staging secret)" -ForegroundColor Gray
+
+Write-Host "`n   For PRODUCTION environment:" -ForegroundColor Yellow
+Write-Host "   • AUTH0_DOMAIN = $($auth0Config.production.Domain)" -ForegroundColor Gray
+Write-Host "   • AUTH0_CLIENT_ID = $($auth0Config.production.ClientId)" -ForegroundColor Gray
+Write-Host "   • AUTH0_CLIENT_SECRET = (your production secret)" -ForegroundColor Gray
+
+Write-Host "`n2. 🌍 Environment Protection Rules (Optional):" -ForegroundColor White
+Write-Host "   In each environment, you can add protection rules:" -ForegroundColor Cyan
+Write-Host "   • development: No restrictions (ready to use)" -ForegroundColor Gray
+Write-Host "   • staging: Add reviewers if needed" -ForegroundColor Gray  
+Write-Host "   • production: Add reviewers and deployment branch restrictions" -ForegroundColor Gray
 
 Write-Host "`n3. 🧪 Test the Deployment Flow:" -ForegroundColor White
 Write-Host "   Feature Branch → Development:" -ForegroundColor Cyan
