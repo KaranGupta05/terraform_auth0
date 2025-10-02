@@ -51,23 +51,26 @@ resource "auth0_prompt" "tenant_prompt" {
 
 # Attack Protection
 resource "auth0_attack_protection" "breached_password_detection" {
-  breached_password_detection {
-    enabled = true
-    method  = "enhanced" # Use "enhanced" for Credential Guard, otherwise "standard" for regular public breach lists
+  dynamic "breached_password_detection" {
+    for_each = var.enable_breach_detection ? [1] : []
+    content {
+      enabled = true
+      method  = var.enable_enhanced_breach_detection ? "enhanced" : "standard" # Use "enhanced" for Credential Guard, otherwise "standard" for regular public breach lists
 
-    shields = [
-      "block",
-      "admin_notification",
-      # "user_notification" # Add only if you want users notified directly
-    ]
+      shields = [
+        "block",
+        "admin_notification",
+        # "user_notification" # Add only if you want users notified directly
+      ]
 
-    admin_notification_frequency = ["immediately"] # Can also be "daily", "weekly", or "monthly"
+      admin_notification_frequency = ["immediately"] # Can also be "daily", "weekly", or "monthly"
 
-    # Optionally enable/disable user notifications:
-    # user_notification_enabled = false   # Only if provider supports this option
+      # Optionally enable/disable user notifications:
+      # user_notification_enabled = false   # Only if provider supports this option
 
-    # Example: disable user notification for compromised credentials
-    # You may need to use management API for fine-grained settings if this option is not exposed in the provider
+      # Example: disable user notification for compromised credentials
+      # You may need to use management API for fine-grained settings if this option is not exposed in the provider
+    }
   }
   
   brute_force_protection {
@@ -99,6 +102,7 @@ resource "auth0_branding" "tenant_branding" {
 
 # Enable custom email provider
 resource "auth0_email_provider" "custom_provider" {
+  count     = var.create_email_templates ? 1 : 0
   name      = "smtp"
   default_from_address = "no-reply@yourdomain.com"
   credentials {
@@ -111,6 +115,7 @@ resource "auth0_email_provider" "custom_provider" {
 
 # Email template example - Reset Password
 resource "auth0_email_template" "reset_password" {
+  count      = var.create_email_templates ? 1 : 0
   depends_on = [auth0_email_provider.custom_provider]
   template        = "reset_email"  # Email template identifier
   subject         = "Reset your password"
@@ -122,6 +127,7 @@ resource "auth0_email_template" "reset_password" {
 
 # Add missing resource server resource
 resource "auth0_resource_server" "api" {
+  count      = var.create_resource_server ? 1 : 0
   name       = var.api_name
   identifier = var.api_identifier
 
@@ -133,6 +139,7 @@ resource "auth0_resource_server" "api" {
 
 #Log Stream Configuration
 resource "auth0_log_stream" "splunk_cribl" {
+  count  = var.create_log_stream ? 1 : 0
   name   = "Cribl"
   type   = "splunk"
   status = "active"
@@ -141,7 +148,7 @@ resource "auth0_log_stream" "splunk_cribl" {
     splunk_domain = "default.main.dreamy-moore-3stzf1x.cribl.cloud"
     splunk_port   = 20001
     splunk_token  = "<Your Cribl/Splunk Event Collector Token>"
-    splunk_tls    = true
+    splunk_secure = true
   }
 
   # Prioritized logs disabled (default)
@@ -151,17 +158,20 @@ resource "auth0_log_stream" "splunk_cribl" {
 
 # Add missing role resources
 resource "auth0_role" "admin" {
+  count       = var.create_admin_role ? 1 : 0
   name        = "Admin"
   description = "Administrator role with full access"
 }
 
 resource "auth0_role" "user" {
+  count       = var.create_user_role ? 1 : 0
   name        = "User"
   description = "Standard user role"
 }
 
 # Auth0 Action (Login Flow)
 resource "auth0_action" "login_action" {
+  count = var.create_login_action ? 1 : 0
   name = "add-user-metadata"
   
   supported_triggers {

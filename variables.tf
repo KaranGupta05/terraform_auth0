@@ -151,3 +151,57 @@ variable "environment" {
   type        = string
   default     = "dev"
 }
+
+# Action Configuration Variables
+variable "create_login_action" {
+  description = "Whether to create the login action (set to false if action already exists)"
+  type        = bool
+  default     = true
+}
+
+# Attack Protection Variables
+variable "enable_enhanced_breach_detection" {
+  description = "Whether to use enhanced breached password detection (requires paid subscription)"
+  type        = bool
+  default     = false
+}
+
+variable "enable_breach_detection" {
+  description = "Whether to enable breached password detection at all (requires subscription)"
+  type        = bool
+  default     = false
+}
+
+# Email Configuration Variables
+variable "create_email_templates" {
+  description = "Whether to create email templates (requires properly configured email provider)"
+  type        = bool
+  default     = false
+}
+
+# Resource Server Variables
+variable "create_resource_server" {
+  description = "Whether to create the resource server (set to false if it already exists)"
+  type        = bool
+  default     = true
+}
+
+# Log Stream Variables
+variable "create_log_stream" {
+  description = "Whether to create log streams (requires proper scopes and permissions)"
+  type        = bool
+  default     = false
+}
+
+# Role Configuration Variables
+variable "create_admin_role" {
+  description = "Whether to create the admin role (set to false if it already exists)"
+  type        = bool
+  default     = true
+}
+
+variable "create_user_role" {
+  description = "Whether to create the user role (set to false if it already exists)"
+  type        = bool
+  default     = true
+}
