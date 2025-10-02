@@ -9,7 +9,7 @@ param(
 )
 
 Write-Host "🚀 Auth0 Terraform - End-to-End Deployment Setup" -ForegroundColor Blue
-Write-Host "Repository: KaranGupta05/terrform_auth0" -ForegroundColor Cyan
+Write-Host "Repository: KaranGupta05/terraform_auth0" -ForegroundColor Cyan
 
 # Add GitHub CLI to PATH
 if (Test-Path "C:\Program Files\GitHub CLI\gh.exe") {
@@ -48,7 +48,7 @@ if ($SetupEnvironments) {
             $environments = @("development", "staging", "production")
             foreach ($env in $environments) {
                 Write-Host "Creating environment: $env" -ForegroundColor Cyan
-                & $ghPath api repos/KaranGupta05/terrform_auth0/environments/$env -X PUT | Out-Null
+                & $ghPath api repos/KaranGupta05/terraform_auth0/environments/$env -X PUT | Out-Null
                 if ($LASTEXITCODE -eq 0) {
                     Write-Success "Environment '$env' created"
                 } else {
@@ -193,14 +193,14 @@ if ($CommitAndPush) {
 Write-Step "Next Steps for End-to-End Testing" "Green"
 
 Write-Host "1. 🔐 Set up GitHub Repository Secrets:" -ForegroundColor White
-Write-Host "   Go to: https://github.com/KaranGupta05/terrform_auth0/settings/secrets/actions" -ForegroundColor Cyan
+Write-Host "   Go to: https://github.com/KaranGupta05/terraform_auth0/settings/secrets/actions" -ForegroundColor Cyan
 Write-Host "   Add these secrets:" -ForegroundColor White
 Write-Host "   • AUTH0_DOMAIN" -ForegroundColor Gray
 Write-Host "   • AUTH0_CLIENT_ID" -ForegroundColor Gray
 Write-Host "   • AUTH0_CLIENT_SECRET" -ForegroundColor Gray
 
 Write-Host "`n2. 🌍 Configure GitHub Environments:" -ForegroundColor White
-Write-Host "   Go to: https://github.com/KaranGupta05/terrform_auth0/settings/environments" -ForegroundColor Cyan
+Write-Host "   Go to: https://github.com/KaranGupta05/terraform_auth0/settings/environments" -ForegroundColor Cyan
 Write-Host "   • development: No restrictions" -ForegroundColor Gray
 Write-Host "   • staging: Require 1 reviewer, 5-minute wait" -ForegroundColor Gray  
 Write-Host "   • production: Require 2 reviewers, 15-minute wait" -ForegroundColor Gray
@@ -229,9 +229,9 @@ Write-Host "   git push origin main" -ForegroundColor Gray
 Write-Host "   # Deploys to production tenant with approval + creates tag" -ForegroundColor Green
 
 Write-Host "`n4. 🔗 Useful Links:" -ForegroundColor White
-Write-Host "   • Actions: https://github.com/KaranGupta05/terrform_auth0/actions" -ForegroundColor Cyan
-Write-Host "   • Secrets: https://github.com/KaranGupta05/terrform_auth0/settings/secrets" -ForegroundColor Cyan
-Write-Host "   • Environments: https://github.com/KaranGupta05/terrform_auth0/settings/environments" -ForegroundColor Cyan
+Write-Host "   • Actions: https://github.com/KaranGupta05/terraform_auth0/actions" -ForegroundColor Cyan
+Write-Host "   • Secrets: https://github.com/KaranGupta05/terraform_auth0/settings/secrets" -ForegroundColor Cyan
+Write-Host "   • Environments: https://github.com/KaranGupta05/terraform_auth0/settings/environments" -ForegroundColor Cyan
 
 Write-Host "`n💡 Pro Tips:" -ForegroundColor Blue
 Write-Host "• Use 'workflow_dispatch' for manual deployments" -ForegroundColor White

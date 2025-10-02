@@ -7,7 +7,7 @@ param(
 )
 
 Write-Host "🔄 Migrating to Environment-Specific Secrets" -ForegroundColor Blue
-Write-Host "Repository: KaranGupta05/terrform_auth0" -ForegroundColor Cyan
+Write-Host "Repository: KaranGupta05/terraform_auth0" -ForegroundColor Cyan
 
 function Write-Step {
     param([string]$Message, [string]$Color = "Yellow")
@@ -53,7 +53,7 @@ foreach ($envName in $secrets.Keys) {
     # First ensure the environment exists
     Write-Host "  Ensuring environment exists..." -ForegroundColor Gray
     if (-not $DryRun) {
-        gh api "repos/KaranGupta05/terrform_auth0/environments/$envName" -X PUT | Out-Null
+        gh api "repos/KaranGupta05/terraform_auth0/environments/$envName" -X PUT | Out-Null
         if ($LASTEXITCODE -eq 0) {
             Write-Success "  Environment '$envName' ready"
         } else {

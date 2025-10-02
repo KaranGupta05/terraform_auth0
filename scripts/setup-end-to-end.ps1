@@ -39,12 +39,12 @@ if ($gitRemote -and $gitRemote -match "github\.com[/:](.*?)/(.*?)(?:\.git)?$") {
 
 # Check if the auto-detected repo exists - we'll use the corrected name as default
 if ([string]::IsNullOrWhiteSpace($autoDetectedRepo)) {
-    $defaultRepoUrl = "KaranGupta05/teraform_auth0"
+    $defaultRepoUrl = "KaranGupta05/terraform_auth0"
 } else {
     # Auto-detected repo may have different spelling - suggest the actual GitHub repo name
-    if ($autoDetectedRepo -eq "KaranGupta05/terrform_auth0") {
+    if ($autoDetectedRepo -eq "KaranGupta05/terraform_auth0") {
         Write-Host "⚠️ Auto-detected '$autoDetectedRepo' - suggesting actual GitHub repo name" -ForegroundColor Yellow
-        $defaultRepoUrl = "KaranGupta05/teraform_auth0"
+        $defaultRepoUrl = "KaranGupta05/terraform_auth0"
     } else {
         $defaultRepoUrl = $autoDetectedRepo
     }
