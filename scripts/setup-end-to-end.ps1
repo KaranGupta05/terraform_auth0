@@ -8,6 +8,16 @@ param(
     [string]$Environment = "dev"
 )
 
+# Ensure we're running from the project root directory
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$projectRoot = if ($scriptDir -like "*\scripts") { 
+    Split-Path -Parent $scriptDir 
+} else { 
+    $scriptDir 
+}
+Set-Location $projectRoot
+Write-Host "📁 Working Directory: $projectRoot" -ForegroundColor Gray
+
 # Helper Functions
 function Write-Step {
     param([string]$Message, [string]$Color = "Yellow")

@@ -1,4 +1,4 @@
-# Staging environment
+# Auth0 Configuration for Local Development
 auth0_domain        = "dev-fimbrzye0161xm5f.us.auth0.com"
 auth0_client_id     = "bl6gTEatijSPH9JeiwJ0pwqNJwrM0eaW"
 auth0_client_secret = "F5RPxpq2CXv8zWW7jK3AOPbDS5zYryzng5qZsT1l6Vok49FpBuwvYrYZZnCYboUw"
@@ -7,7 +7,8 @@ auth0_client_secret = "F5RPxpq2CXv8zWW7jK3AOPbDS5zYryzng5qZsT1l6Vok49FpBuwvYrYZZ
 tenant_friendly_name = "CDW"
 tenant_support_email = "support@CDW.com"
 
-environment = "qa"
+# Environment
+environment = "dev"
 
 # SMTP configuration for email provider
 smtp_host  = "smtp.yourprovider.com"
@@ -24,7 +25,7 @@ create_resource_server = false
 create_admin_role = false
 create_user_role = false
 
-# Optional Features - set to true only if properly configured
+# Optional Features - set to true only if properly configured and subscription supports it
 create_email_templates = false
 create_log_stream = false
 enable_enhanced_breach_detection = false
