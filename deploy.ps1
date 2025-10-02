@@ -2,7 +2,7 @@ param(
     [string]$Environment = "dev"
 )
 
-$TfvarsFile = "environmentvars/${Environment}.tfvars"
+$TfvarsFile = "config/${Environment}.tfvars"
 
 Write-Host "🚀 Deploying Auth0 infrastructure for environment: $Environment" -ForegroundColor Blue
 
