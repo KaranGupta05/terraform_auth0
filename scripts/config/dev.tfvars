@@ -4,8 +4,8 @@ auth0_client_id     = "bl6gTEatijSPH9JeiwJ0pwqNJwrM0eaW"
 auth0_client_secret = "F5RPxpq2CXv8zWW7jK3AOPbDS5zYryzng5qZsT1l6Vok49FpBuwvYrYZZnCYboUw"
 
 # Tenant Configuration
-tenant_friendly_name = "cdw"
-tenant_support_email = "support@cdw.com"
+tenant_friendly_name = "CDW"
+tenant_support_email = "support@CDW.com"
 
 environment = "dev"
 
