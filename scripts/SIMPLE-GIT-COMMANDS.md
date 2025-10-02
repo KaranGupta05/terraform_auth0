@@ -105,7 +105,7 @@ git push origin v2.2-rollback
 5. **Success Confirmation** → "Apply complete! Resources deployed"
 
 ### **Live Monitoring URL:**
-🔗 **https://github.com/vnyrjkmr/auth0-terraform-deployment/actions**
+🔗 **https://github.com/KaranGupta05/terrform_auth0/actions**
 
 ---
 
