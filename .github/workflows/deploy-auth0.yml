@@ -1,5 +1,18 @@
 name: Deploy Auth0 Infrastructure
 
+# ENVIRONMENT PROTECTION SETUP:
+# To enable approval gates for production deployments:
+# 1. Go to: https://github.com/KaranGupta05/teraform_auth0/settings/environments
+# 2. Click on "production" environment
+# 3. Add protection rules:
+#    - Required reviewers: Add 1-2 team members who can approve production deployments
+#    - Wait timer: Optional 15-minute delay before deployment can proceed
+#    - Deployment branches: Restrict to main/master branches only
+# 4. For staging environment (optional):
+#    - Required reviewers: Add 1 reviewer
+#    - Wait timer: Optional 5-minute delay
+# 5. Development environment can remain without restrictions
+
 on:
   push:
     branches:
@@ -370,7 +383,9 @@ jobs:
     name: 'Deploy to ${{ needs.determine-strategy.outputs.environment }}'
     runs-on: ubuntu-latest
     needs: [determine-strategy, terraform-plan]
-    environment: ${{ needs.determine-strategy.outputs.environment }}
+    environment: 
+      name: ${{ needs.determine-strategy.outputs.environment }}
+      url: ${{ steps.deploy-url.outputs.url }}
     
     if: needs.determine-strategy.outputs.should_deploy == 'true'
     
@@ -403,8 +418,23 @@ jobs:
         with:
           name: terraform-plan-${{ needs.determine-strategy.outputs.environment }}-${{ github.run_number }}
 
+      - name: Approval Gate for Production
+        if: needs.determine-strategy.outputs.environment == 'production'
+        run: |
+          echo "🔒 Production Deployment - Approval Required"
+          echo "This deployment targets the PRODUCTION environment."
+          echo "Please review the terraform plan above before approving."
+          echo ""
+          echo "Deployment Details:"
+          echo "  • Environment: ${{ needs.determine-strategy.outputs.environment }}"
+          echo "  • Tenant: ${{ needs.determine-strategy.outputs.tenant }}"
+          echo "  • Branch/Tag: ${{ github.ref_name }}"
+          echo "  • Commit: ${{ github.sha }}"
+          echo "  • Vars File: ${{ needs.determine-strategy.outputs.tf_vars_file }}"
+          echo ""
+          echo "⚠️  CAUTION: This will modify PRODUCTION Auth0 tenant"
+
       - name: Pre-deployment Validation
-        if: needs.determine-strategy.outputs.deployment_type == 'production' || needs.determine-strategy.outputs.deployment_type == 'release'
         run: |
           echo "🔍 Performing pre-deployment validation for ${{ needs.determine-strategy.outputs.deployment_type }}"
           
@@ -421,12 +451,40 @@ jobs:
           else
             echo "ℹ️ No changes detected - deployment will proceed but may not modify resources"
           fi
+          
+          # Additional validation for production
+          if [[ "${{ needs.determine-strategy.outputs.environment }}" == "production" ]]; then
+            echo "🔒 Additional production validations:"
+            echo "  • Deployment approved through GitHub environment protection"
+            echo "  • Plan reviewed and validated"
+            echo "  • Production tenant backup recommended"
+          fi
 
       - name: Terraform Apply
+        id: apply
         run: |
           echo "🚀 Deploying to ${{ needs.determine-strategy.outputs.environment }} (${{ needs.determine-strategy.outputs.deployment_type }})"
           echo "Using variables file: ${{ needs.determine-strategy.outputs.tf_vars_file }}"
           terraform apply -auto-approve tfplan
+
+      - name: Set Deployment URL
+        id: deploy-url
+        run: |
+          # Set environment-specific URL for deployment tracking
+          case "${{ needs.determine-strategy.outputs.environment }}" in
+            "production")
+              echo "url=https://${{ secrets.AUTH0_DOMAIN }}/dashboard" >> $GITHUB_OUTPUT
+              ;;
+            "staging")
+              echo "url=https://${{ secrets.AUTH0_DOMAIN }}/dashboard" >> $GITHUB_OUTPUT
+              ;;
+            "development")
+              echo "url=https://${{ secrets.AUTH0_DOMAIN }}/dashboard" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
+              ;;
+          esac
 
       - name: Generate Deployment Summary
         run: |

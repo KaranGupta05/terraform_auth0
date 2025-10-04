@@ -528,11 +528,17 @@ Write-Host "   • AUTH0_DOMAIN = $($auth0Config.production.Domain)" -Foreground
 Write-Host "   • AUTH0_CLIENT_ID = $($auth0Config.production.ClientId)" -ForegroundColor Gray
 Write-Host "   • AUTH0_CLIENT_SECRET = (your production secret)" -ForegroundColor Gray
 
-Write-Host "`n2. 🌍 Environment Protection Rules (Optional):" -ForegroundColor White
-Write-Host "   In each environment, you can add protection rules:" -ForegroundColor Cyan
-Write-Host "   • development: No restrictions (ready to use)" -ForegroundColor Gray
-Write-Host "   • staging: Add reviewers if needed" -ForegroundColor Gray  
-Write-Host "   • production: Add reviewers and deployment branch restrictions" -ForegroundColor Gray
+Write-Host "`n2. 🔒 Configure Environment Protection Rules (IMPORTANT for Production):" -ForegroundColor White
+Write-Host "   Go to: https://github.com/$repoUrl/settings/environments" -ForegroundColor Cyan
+Write-Host "`n   For PRODUCTION environment (REQUIRED):" -ForegroundColor Red
+Write-Host "   • Required reviewers: Add 1-2 team members who can approve deployments" -ForegroundColor Yellow
+Write-Host "   • Wait timer: 15 minutes (optional safety delay)" -ForegroundColor Yellow
+Write-Host "   • Deployment branches: Restrict to 'main' or 'master' only" -ForegroundColor Yellow
+Write-Host "`n   For STAGING environment (RECOMMENDED):" -ForegroundColor Yellow
+Write-Host "   • Required reviewers: Add 1 reviewer for validation" -ForegroundColor Gray
+Write-Host "   • Wait timer: 5 minutes (optional)" -ForegroundColor Gray
+Write-Host "`n   For DEVELOPMENT environment:" -ForegroundColor Green
+Write-Host "   • No restrictions needed (ready to use)" -ForegroundColor Gray
 
 Write-Host "`n3. 🧪 Test the Deployment Flow:" -ForegroundColor White
 Write-Host "   Feature Branch → Development:" -ForegroundColor Cyan
