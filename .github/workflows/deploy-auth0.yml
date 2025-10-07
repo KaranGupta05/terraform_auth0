@@ -199,6 +199,7 @@ jobs:
           echo "  Should Deploy: $SHOULD_DEPLOY"
           echo "  Type: $DEPLOYMENT_TYPE"
           echo "  Create Tag: $CREATE_TAG"
+
   # Terraform Plan Job
   terraform-plan:
     name: 'Terraform Plan (${{ needs.determine-strategy.outputs.environment }})'
@@ -229,6 +230,7 @@ jobs:
           auth0_client_id = "$AUTH0_CLIENT_ID"
           auth0_client_secret = "$AUTH0_CLIENT_SECRET"
           EOF
+
       - name: Terraform Init
         run: terraform init
 
@@ -272,6 +274,7 @@ jobs:
             echo "❌ Failed to obtain Auth0 access token"
             exit 1
           fi
+
       - name: Terraform Plan
         id: plan
         run: |
@@ -288,6 +291,7 @@ jobs:
           
           # Set exit code for workflow
           exit $PLAN_EXIT_CODE
+
       - name: Upload Plan Artifact
         uses: actions/upload-artifact@v4
         if: always()
@@ -315,6 +319,7 @@ jobs:
             const truncatedPlan = plan.length > maxLength 
               ? plan.substring(0, maxLength) + '\n... (truncated)'
               : plan;
+
             const deploymentType = '${{ needs.determine-strategy.outputs.deployment_type }}';
             const environment = '${{ needs.determine-strategy.outputs.environment }}';
             const exitCode = '${{ steps.plan.outputs.exitcode }}';
@@ -335,6 +340,7 @@ jobs:
                 statusEmoji = '❌';
                 statusText = 'Error';
             }
+
             const output = `
             ## 🏗️ Terraform Plan - ${environment} (${deploymentType})
             
@@ -352,12 +358,14 @@ jobs:
             
             </details>
             `;
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
             });
+
   # Terraform Apply Job
   terraform-apply:
     name: 'Deploy to ${{ needs.determine-strategy.outputs.environment }}'
@@ -389,6 +397,7 @@ jobs:
           auth0_client_id = "$AUTH0_CLIENT_ID"
           auth0_client_secret = "$AUTH0_CLIENT_SECRET"
           EOF
+
       - name: Terraform Init
         run: terraform init
 
@@ -412,6 +421,7 @@ jobs:
           echo "  • Vars File: ${{ needs.determine-strategy.outputs.tf_vars_file }}"
           echo ""
           echo "⚠️  CAUTION: This will modify PRODUCTION Auth0 tenant"
+
       - name: Pre-deployment Validation
         run: |
           echo "🔍 Performing pre-deployment validation for ${{ needs.determine-strategy.outputs.deployment_type }}"
@@ -437,12 +447,14 @@ jobs:
             echo "  • Plan reviewed and validated"
             echo "  • Production tenant backup recommended"
           fi
+
       - name: Terraform Apply
         id: apply
         run: |
           echo "🚀 Deploying to ${{ needs.determine-strategy.outputs.environment }} (${{ needs.determine-strategy.outputs.deployment_type }})"
           echo "Using variables file: ${{ needs.determine-strategy.outputs.tf_vars_file }}"
           terraform apply -auto-approve tfplan
+
       - name: Set Deployment URL
         id: deploy-url
         run: |
@@ -461,6 +473,7 @@ jobs:
               echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
               ;;
           esac
+
       - name: Generate Deployment Summary
         run: |
           echo "## 🎉 Deployment Complete" >> $GITHUB_STEP_SUMMARY
@@ -478,6 +491,7 @@ jobs:
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           terraform output -no-color >> $GITHUB_STEP_SUMMARY || echo "No outputs available" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
   # Debug Release Tag Conditions
   debug-conditions:
     name: 'Debug Release Tag Conditions'
@@ -491,6 +505,7 @@ jobs:
           echo "terraform-apply result: '${{ needs.terraform-apply.result }}'"
           echo "deployment_type: '${{ needs.determine-strategy.outputs.deployment_type }}'"
           echo "Current branch: '${{ github.ref_name }}'"
+
   # Create release tag for successful production deployments
   create-release-tag:
     name: 'Create Release Tag'
@@ -529,6 +544,7 @@ jobs:
           NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
           echo "New tag: $NEW_TAG"
           echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
       - name: Create Release Tag
         run: |
           git config user.name "github-actions[bot]"
@@ -538,6 +554,7 @@ jobs:
           git push origin "${{ steps.version.outputs.tag }}"
           
           echo "✅ Created release tag: ${{ steps.version.outputs.tag }}"
+
       - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
@@ -577,6 +594,7 @@ jobs:
           echo "Environment: ${{ needs.determine-strategy.outputs.environment }}"
           echo "Deployment Type: ${{ needs.determine-strategy.outputs.deployment_type }}"
           echo "Tenant: ${{ needs.determine-strategy.outputs.tenant }}"
+
       - name: Deployment Failure Notification
         if: needs.terraform-apply.result == 'failure'
         run: |
