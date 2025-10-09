@@ -70,14 +70,14 @@ output "api_resources" {
 output "roles" {
   description = "Created Auth0 roles"
   value = {
-    admin = {
-      name        = auth0_role.admin.name
-      description = auth0_role.admin.description
-    }
-    user = {
-      name        = auth0_role.user.name
-      description = auth0_role.user.description
-    }
+    admin = var.create_admin_role && length(auth0_role.admin) > 0 ? {
+      name        = auth0_role.admin[0].name
+      description = auth0_role.admin[0].description
+    } : null
+    user = var.create_user_role && length(auth0_role.user) > 0 ? {
+      name        = auth0_role.user[0].name
+      description = auth0_role.user[0].description
+    } : null
   }
 }
 
@@ -98,10 +98,10 @@ output "custom_roles" {
 
 output "database_connection" {
   description = "Database connection information"
-  value = {
-    name     = auth0_connection.database.name
-    strategy = auth0_connection.database.strategy
-  }
+  value = !var.skip_existing_database && length(auth0_connection.database) > 0 ? {
+    name     = auth0_connection.database[0].name
+    strategy = auth0_connection.database[0].strategy
+  } : null
 }
 
 # =============================================================================
