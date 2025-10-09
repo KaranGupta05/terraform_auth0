@@ -21,7 +21,7 @@ git push origin development
 ```bash
 git checkout development
 git checkout -b "feature/new-auth"
-echo "New authentication feature" > "feature.md"
+###open config/dev.tfvars and make changes as required
 git add .
 git commit -m "feat: New authentication system"
 git push origin feature/new-auth
