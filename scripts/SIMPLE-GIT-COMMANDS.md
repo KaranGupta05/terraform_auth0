@@ -52,7 +52,7 @@ git push origin v12.0-staging
 ### **4️⃣ PRODUCTION TAG: Live Release**
 ```bash
 git checkout master
-echo "Production release" > "prod-release.md"
+###open config/prod.tfvars and make changes as required
 git add .
 git commit -m "release: Production deployment"
 git tag -a "v12.1" -m "Production release v12.1"
