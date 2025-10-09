@@ -58,7 +58,7 @@ output "api_resources" {
     for api_key, api in auth0_resource_server.apis : api_key => {
       name       = api.name
       identifier = api.identifier
-      scopes     = [for scope in api.scopes : scope.value]
+      scopes     = try([for scope in auth0_resource_server_scopes.api_scopes_new[api_key].scopes : scope.name], [])
     }
   }
 }
