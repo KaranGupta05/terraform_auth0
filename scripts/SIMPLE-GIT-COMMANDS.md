@@ -66,7 +66,7 @@ git push origin v12.1
 ```bash
 git checkout master
 git checkout -b "hotfix/critical-fix"
-echo "Critical security fix" > "hotfix.md"
+###Make the changes in .\config\prod.tfvars file as per the requirement and follow the below
 git add .
 git commit -m "🚨 HOTFIX: Critical security patch"
 git push origin hotfix/critical-fix
