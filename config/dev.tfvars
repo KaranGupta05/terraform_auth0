@@ -27,6 +27,10 @@ create_log_stream = false
 enable_enhanced_breach_detection = false
 enable_breach_detection = false
 
+# Application Creation Settings
+skip_existing_applications = false
+skip_existing_resource_servers = false
+
 # Application definitions
 applications = {
   main_app_new = {
