@@ -515,6 +515,7 @@ jobs:
       needs.determine-strategy.outputs.create_tag == 'true' && 
       needs.terraform-apply.result == 'success' &&
       (needs.determine-strategy.outputs.deployment_type == 'production' || 
+       needs.determine-strategy.outputs.deployment_type == 'release' ||
        needs.determine-strategy.outputs.deployment_type == 'staging')
     
     steps:
