@@ -1,7 +1,7 @@
 #I am making changes in dev site
-#I am working on the feature branch
+
 # Tenant Configuration
-tenant_friendly_name = "CDW"
+tenant_friendly_name = "CDW123"
 tenant_support_email = "support@CDW.com"
 
 environment = "dev"
