@@ -1,8 +1,5 @@
-# Development environment
-auth0_domain        = "dev-3ey3z12ipauxwzup.us.auth0.com"
-auth0_client_id     = "Q2rxVFYyhprC4VH6y9Rec0op17mYSxEU"
-auth0_client_secret = "T8UAMXbpGU2nX9lEDUrKvXDpAk2Jxq8SQ5H9AhrOgcRbVqfOp1BFfX25IeepuzjJ"
-
+#I am making changes in dev site
+#I am working on the feature branch
 # Tenant Configuration
 tenant_friendly_name = "CDW"
 tenant_support_email = "support@CDW.com"

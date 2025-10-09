@@ -8,7 +8,7 @@
 ```bash
 git checkout development
 git pull origin development
-echo "Daily development update - $(Get-Date)" > "dev-work.md"
+###open config/dev.tfvars and make changes as required
 git add .
 git commit -m "feat: Daily development improvements"
 git push origin development
@@ -21,7 +21,7 @@ git push origin development
 ```bash
 git checkout development
 git checkout -b "feature/new-auth"
-echo "New authentication feature" > "feature.md"
+###open config/dev.tfvars and make changes as required
 git add .
 git commit -m "feat: New authentication system"
 git push origin feature/new-auth
@@ -30,7 +30,7 @@ git push origin feature/new-auth
 git checkout development
 git merge feature/new-auth --no-ff -m "Merge: New auth feature"
 git push origin development
-git branch -d feature/new-auth
+git branch -d feature/new-auth #this is for deleting the branch"
 ```
 **👀 Watch:** GitHub Actions → Development Environment → Dev Tenant
 
@@ -39,7 +39,7 @@ git branch -d feature/new-auth
 ### **3️⃣ STAGING TAG: Pre-Production**
 ```bash
 git checkout development
-echo "Staging release candidate" > "staging-release.md"
+###open config/qa.tfvars and make changes as required
 git add .
 git commit -m "milestone: Staging release preparation"
 git tag -a "v12.0-staging" -m "Staging milestone for validation"
@@ -52,7 +52,7 @@ git push origin v12.0-staging
 ### **4️⃣ PRODUCTION TAG: Live Release**
 ```bash
 git checkout master
-echo "Production release" > "prod-release.md"
+###open config/prod.tfvars and make changes as required
 git add .
 git commit -m "release: Production deployment"
 git tag -a "v12.1" -m "Production release v12.1"
