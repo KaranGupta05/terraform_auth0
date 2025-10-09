@@ -2,7 +2,7 @@ name: Deploy Auth0 Infrastructure
 
 # ENVIRONMENT PROTECTION SETUP:
 # To enable approval gates for production deployments:
-# 1. Go to: https://github.com/KaranGupta05/teraform_auth0/settings/environments
+# 1. Go to: https://github.com/KaranGupta05/terraform_auth0/settings/environments
 # 2. Click on "production" environment
 # 3. Add protection rules:
 #    - Required reviewers: Add 1-2 team members who can approve production deployments

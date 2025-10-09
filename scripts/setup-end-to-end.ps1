@@ -39,12 +39,12 @@ if ($gitRemote -and $gitRemote -match "github\.com[/:](.*?)/(.*?)(?:\.git)?$") {
 
 # Check if the auto-detected repo exists - we'll use the corrected name as default
 if ([string]::IsNullOrWhiteSpace($autoDetectedRepo)) {
-    $defaultRepoUrl = "KaranGupta05/terrform_auth0"
+    $defaultRepoUrl = "KaranGupta05/terraform_auth0"
 } else {
     # Auto-detected repo may have different spelling - suggest the actual GitHub repo name
     if ($autoDetectedRepo -eq "KaranGupta05/terraform_auth0") {
         Write-Host "⚠️ Auto-detected '$autoDetectedRepo' - using actual GitHub repo name" -ForegroundColor Yellow
-        $defaultRepoUrl = "KaranGupta05/terrform_auth0"
+        $defaultRepoUrl = "KaranGupta05/terraform_auth0"
     } else {
         $defaultRepoUrl = $autoDetectedRepo
     }
@@ -384,14 +384,19 @@ enable_breach_detection = false
 # Step 2: Validate current setup
 Write-Step "Validating Current Setup"
 
-# Check required files
+# Determine if we're running from scripts directory or root directory
+$currentDir = Get-Location
+$isInScriptsDir = $currentDir.Path.EndsWith("scripts")
+$pathPrefix = if ($isInScriptsDir) { ".." } else { "." }
+
+# Check required files with correct path prefix
 $requiredFiles = @{
-    "../.github/workflows/deploy-auth0.yml" = "GitHub Actions workflow"
-    "../config/dev.tfvars" = "Development environment variables"
-    "../config/qa.tfvars" = "Staging environment variables"
-    "../config/prod.tfvars" = "Production environment variables"
-    "../main.tf" = "Terraform main configuration"
-    "../variables.tf" = "Terraform variables"
+    "$pathPrefix\.github\workflows\deploy-auth0.yml" = "GitHub Actions workflow"
+    "$pathPrefix\config\dev.tfvars" = "Development environment variables"
+    "$pathPrefix\config\qa.tfvars" = "Staging environment variables" 
+    "$pathPrefix\config\prod.tfvars" = "Production environment variables"
+    "$pathPrefix\main.tf" = "Terraform main configuration"
+    "$pathPrefix\variables.tf" = "Terraform variables"
 }
 
 $allFilesExist = $true
@@ -414,7 +419,8 @@ if ($TestLocalDeploy) {
     Write-Step "Testing Local Terraform Deployment"
     
     # Check if terraform.tfvars exists with credentials
-    if (-not (Test-Path "../terraform.tfvars")) {
+    $terraformVarsPath = if ($isInScriptsDir) { "../terraform.tfvars" } else { "./terraform.tfvars" }
+    if (-not (Test-Path $terraformVarsPath)) {
         Write-Error "terraform.tfvars not found. Please create it with your Auth0 credentials."
         Write-Host "Required format:" -ForegroundColor Yellow
         Write-Host 'auth0_domain = "your-domain.us.auth0.com"' -ForegroundColor Gray
