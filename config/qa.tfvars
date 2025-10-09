@@ -7,7 +7,7 @@ auth0_client_secret = "T8UAMXbpGU2nX9lEDUrKvXDpAk2Jxq8SQ5H9AhrOgcRbVqfOp1BFfX25I
 tenant_friendly_name = "CDW"
 tenant_support_email = "support@CDW.com"
 
-environment = "qa"
+environment = "staging"
 
 # SMTP configuration for email provider
 smtp_host  = "smtp.yourprovider.com"
