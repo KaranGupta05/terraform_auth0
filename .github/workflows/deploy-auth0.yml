@@ -119,6 +119,7 @@ jobs:
             TF_VARS_FILE="config/prod.tfvars"
             SHOULD_DEPLOY="true"
             DEPLOYMENT_TYPE="release"
+            CREATE_TAG="true"
             
           # Branch-based deployments
           elif [[ "${{ github.event_name }}" == "push" ]]; then
@@ -454,7 +455,9 @@ jobs:
     if: |
       needs.determine-strategy.outputs.create_tag == 'true' && 
       needs.terraform-apply.result == 'success' &&
-      needs.determine-strategy.outputs.deployment_type == 'production'
+      (needs.determine-strategy.outputs.deployment_type == 'production' || 
+       needs.determine-strategy.outputs.deployment_type == 'release' ||
+       needs.determine-strategy.outputs.deployment_type == 'staging')
     
     steps:
       - name: Checkout Repository
@@ -512,12 +515,12 @@ jobs:
             - **Branch:** ${{ github.ref_name }}
             
             **Changes:**
-            Deployed Auth0 infrastructure changes to production environment.
+            Deployed Auth0 infrastructure changes to ${{ needs.determine-strategy.outputs.environment }} environment.
             
             **Rollback:**
             If needed, rollback can be performed by reverting to the previous release tag.
           draft: false
-          prerelease: false
+          prerelease: ${{ needs.determine-strategy.outputs.deployment_type == 'staging' }}
 
   # Notification job for deployment status
   notify-deployment:
