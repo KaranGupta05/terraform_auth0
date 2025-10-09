@@ -1,7 +1,7 @@
 #I am making changes in dev site
 
 # Tenant Configuration
-tenant_friendly_name = "CDW123"
+tenant_friendly_name = "CDW_dev"
 tenant_support_email = "support@CDW.com"
 
 environment = "dev"
@@ -34,94 +34,94 @@ skip_existing_resource_servers = false
 # Application definitions
 applications = {
   main_app_new = {
-    name        = "ITCyberSecSol Main App New app"
+    name        = "cdw Main App New app"
     type        = "spa"
     description = "Main customer portal application New app"
     callbacks   = [
       "http://localhost:3000/callback",
-      "https://main.itcybersecsol.com/callback"
+      "https://main.cdw.com/callback"
     ]
     logout_urls = [
       "http://localhost:3000",
-      "https://main.itcybersecsol.com"
+      "https://main.cdw.com"
     ]
     allowed_origins = [
       "http://localhost:3000",
-      "https://main.itcybersecsol.com"
+      "https://main.cdw.com"
     ]
     web_origins = [
       "http://localhost:3000",
-      "https://main.itcybersecsol.com"
+      "https://main.cdw.com"
     ]
   },
   main_app = {
-    name        = "ITCyberSecSol Main App"
+    name        = "cdw Main App"
     type        = "spa"
     description = "Main customer portal application"
     callbacks   = [
       "http://localhost:3000/callback",
-      "https://main.itcybersecsol.com/callback"
+      "https://main.cdw.com/callback"
     ]
     logout_urls = [
       "http://localhost:3000",
-      "https://main.itcybersecsol.com"
+      "https://main.cdw.com"
     ]
     allowed_origins = [
       "http://localhost:3000",
-      "https://main.itcybersecsol.com"
+      "https://main.cdw.com"
     ]
     web_origins = [
       "http://localhost:3000",
-      "https://main.itcybersecsol.com"
+      "https://main.cdw.com"
     ]
   },
   admin_dashboard = {
-    name        = "ITCyberSecSol Admin Dashboard"
+    name        = "cdw Admin Dashboard"
     type        = "spa"
     description = "Administrative dashboard application"
     callbacks   = [
       "http://localhost:3001/callback",
-      "https://admin.itcybersecsol.com/callback"
+      "https://admin.cdw.com/callback"
     ]
     logout_urls = [
       "http://localhost:3001",
-      "https://admin.itcybersecsol.com"
+      "https://admin.cdw.com"
     ]
     allowed_origins = [
       "http://localhost:3001",
-      "https://admin.itcybersecsol.com"
+      "https://admin.cdw.com"
     ]
     web_origins = [
       "http://localhost:3001",
-      "https://admin.itcybersecsol.com"
+      "https://admin.cdw.com"
     ]
   },
   admin_test_app = {
-    name        = "ITCyberSecSol Admin test app"
+    name        = "cdw Admin test app"
     type        = "spa"
     description = "Administrative dashboard application"
     callbacks   = [
       "http://localhost:5001/callback",
-      "https://admin.itcybersecsol1.com/callback"
+      "https://admin.cdw1.com/callback"
     ]
     logout_urls = [
       "http://localhost:5001",
-      "https://admin.itcybersecsol1.com"
+      "https://admin.cdw1.com"
     ]
     allowed_origins = [
       "http://localhost:5001",
-      "https://admin.itcybersecsol1.com"
+      "https://admin.cdw1.com"
     ]
     web_origins = [
       "http://localhost:5001",
-      "https://admin.itcybersecsol1.com"
+      "https://admin.cdw1.com"
     ]
   },
   main_api = {
-    name         = "ITCyberSecSol Main API"
+    name         = "cdw Main API"
     type         = "api"
     description  = "Main backend API service"
-    api_identifier = "https://api.itcybersecsol2.com"
+    api_identifier = "https://api.cdw2.com"
     api_scopes   = [
       {
         name        = "read:users"
@@ -134,10 +134,10 @@ applications = {
     ]
   },
   admin_api = {
-    name         = "ITCyberSecSol Admin API"
+    name         = "cdw Admin API"
     type         = "api"
     description  = "Administrative API service"
-    api_identifier = "https://admin-api.itcybersecsol2.com"
+    api_identifier = "https://admin-api.cdw2.com"
     api_scopes   = [
       {
         name        = "read:admin"
