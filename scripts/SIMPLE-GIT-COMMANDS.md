@@ -30,7 +30,7 @@ git push origin feature/new-auth
 git checkout development
 git merge feature/new-auth --no-ff -m "Merge: New auth feature"
 git push origin development
-git branch -d feature/new-auth
+git branch -d feature/new-auth #this is for deleting the branch"
 ```
 **👀 Watch:** GitHub Actions → Development Environment → Dev Tenant
 
@@ -39,7 +39,7 @@ git branch -d feature/new-auth
 ### **3️⃣ STAGING TAG: Pre-Production**
 ```bash
 git checkout development
-echo "Staging release candidate" > "staging-release.md"
+###open config/qa.tfvars and make changes as required
 git add .
 git commit -m "milestone: Staging release preparation"
 git tag -a "v12.0-staging" -m "Staging milestone for validation"
