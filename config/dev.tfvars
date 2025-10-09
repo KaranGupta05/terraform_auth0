@@ -32,7 +32,6 @@ skip_existing_applications = false
 skip_existing_resource_servers = false
 
 # Application definitions
-skip_existing_applications = false
 applications = {
   main_app_new = {
     name        = "cdw Main App New app"
