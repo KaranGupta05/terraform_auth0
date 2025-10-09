@@ -42,8 +42,8 @@ git checkout development
 echo "Staging release candidate" > "staging-release.md"
 git add .
 git commit -m "milestone: Staging release preparation"
-git tag -a "v11.0-staging" -m "Staging milestone for validation"
-git push origin v11.0-staging
+git tag -a "v12.0-staging" -m "Staging milestone for validation"
+git push origin v12.0-staging
 ```
 **👀 Watch:** GitHub Actions → Staging Environment → Staging Tenant
 
