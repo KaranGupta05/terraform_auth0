@@ -200,3 +200,67 @@ resource "auth0_action" "login_action" {
   runtime = "node18"
   deploy  = true
 }
+
+# Applications Configuration
+# SPA and Regular Web Applications
+resource "auth0_client" "spa_apps" {
+  for_each = {
+    for name, config in var.applications : name => config
+    if config.type == "spa" || config.type == "regular_web"
+  }
+  
+  name        = each.value.name
+  description = each.value.description
+  app_type    = each.value.type == "spa" ? "spa" : "regular_web"
+  
+  callbacks   = each.value.callbacks
+  allowed_logout_urls = each.value.logout_urls
+  allowed_origins = each.value.allowed_origins
+  web_origins = each.value.web_origins
+  
+  # SPA specific settings
+  dynamic "jwt_configuration" {
+    for_each = each.value.type == "spa" ? [1] : []
+    content {
+      lifetime_in_seconds = 36000
+      secret_encoded     = false
+      alg               = "RS256"
+    }
+  }
+  
+  # Enable refresh token rotation for SPAs
+  dynamic "refresh_token" {
+    for_each = each.value.type == "spa" ? [1] : []
+    content {
+      expiration_type = "expiring"
+      leeway         = 0
+      token_lifetime = 2592000  # 30 days
+      rotation_type  = "rotating"
+    }
+  }
+}
+
+# API Applications (Resource Servers)
+resource "auth0_resource_server" "api_apps" {
+  for_each = {
+    for name, config in var.applications : name => config
+    if config.type == "api"
+  }
+  
+  name       = each.value.name
+  identifier = each.value.api_identifier
+  
+  allow_offline_access                            = true
+  token_lifetime                                 = 86400
+  token_lifetime_for_web                         = 7200
+  skip_consent_for_verifiable_first_party_clients = true
+  
+  # Add scopes
+  dynamic "scopes" {
+    for_each = each.value.api_scopes
+    content {
+      value       = scopes.value.name
+      description = scopes.value.description
+    }
+  }
+}

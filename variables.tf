@@ -205,3 +205,23 @@ variable "create_user_role" {
   type        = bool
   default     = true
 }
+
+# Application Configuration Variables
+variable "applications" {
+  description = "Map of applications to create in Auth0"
+  type = map(object({
+    name        = string
+    type        = string
+    description = optional(string, "")
+    callbacks   = optional(list(string), [])
+    logout_urls = optional(list(string), [])
+    allowed_origins = optional(list(string), [])
+    web_origins = optional(list(string), [])
+    api_identifier = optional(string, "")
+    api_scopes = optional(list(object({
+      name        = string
+      description = string
+    })), [])
+  }))
+  default = {}
+}
