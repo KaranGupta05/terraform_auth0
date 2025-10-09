@@ -1,7 +1,7 @@
 #I am making changes in dev site
 
 # Tenant Configuration
-tenant_friendly_name = "CDW_dev"
+tenant_friendly_name = "CDW"
 tenant_support_email = "support@CDW.com"
 
 environment = "dev"
