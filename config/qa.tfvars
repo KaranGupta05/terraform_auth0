@@ -1,13 +1,16 @@
 # Staging environment
-auth0_domain        = "sdfdsf"
-auth0_client_id     = "dsfdsf"
-auth0_client_secret = "dsfdsf"
-
+# Resource Creation Control - SKIP EVERYTHING TO AVOID CONFLICTS
+skip_existing_applications      = true   # Skip applications to avoid tenant limits
+skip_existing_resource_servers = true   # Skip resource servers to avoid conflicts
+skip_existing_database        = true   # Skip database to avoid conflicts
+skip_existing_action          = true   # Skip actions
 # Tenant Configuration
 tenant_friendly_name = "CDW"
 tenant_support_email = "dsfdsf"
 
-environment = "qa"
+# Empty applications to skip all app creation
+applications = {}
+environment = "dev"
 
 # SMTP configuration for email provider
 smtp_host  = "smtp.yourprovider.com"
@@ -29,3 +32,5 @@ create_email_templates = false
 create_log_stream = false
 enable_enhanced_breach_detection = false
 enable_breach_detection = false
+
+primary_color = "#af0ed7"
