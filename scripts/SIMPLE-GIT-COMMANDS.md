@@ -8,7 +8,7 @@
 ```bash
 git checkout development
 git pull origin development
-echo "Daily development update - $(Get-Date)" > "dev-work.md"
+###open config/dev.tfvars and make changes as required
 git add .
 git commit -m "feat: Daily development improvements"
 git push origin development
