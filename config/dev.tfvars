@@ -29,7 +29,7 @@ enable_breach_detection = false
 
 # Application Creation Settings
 skip_existing_applications = false
-skip_existing_resource_servers = false
+skip_existing_resource_servers = true
 
 # Application definitions
 applications = {
