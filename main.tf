@@ -291,17 +291,19 @@ resource "auth0_resource_server" "api" {
   }
 }
 
-# Auth0 Client Grant (API permissions)
-resource "auth0_client_grant" "api_grant" {
-  count     = (var.api_name != "" && !var.skip_existing_applications && !var.skip_existing_resource_servers) ? 1 : 0
-  client_id = length(auth0_client.api_app) > 0 ? auth0_client.api_app[0].id : ""
-  audience  = length(auth0_resource_server.api) > 0 ? auth0_resource_server.api[0].identifier : ""
-  
-  scopes = [
-    "read:users",
-    "write:users"
-  ]
-}
+# Auth0 Client Grant (API permissions) - DISABLED
+# This legacy resource is disabled as it conflicts with the new applications structure
+# Client grants are managed through the applications configuration
+# resource "auth0_client_grant" "api_grant" {
+#   count     = 0  # Disabled
+#   client_id = ""
+#   audience  = ""
+#   
+#   scopes = [
+#     "read:users",
+#     "write:users"
+#   ]
+# }
 
 # Auth0 Connection (Database)
 resource "auth0_connection" "database" {
