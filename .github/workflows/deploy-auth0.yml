@@ -385,9 +385,7 @@ jobs:
     name: 'Deploy to ${{ needs.determine-strategy.outputs.environment }}'
     runs-on: ubuntu-latest
     needs: [determine-strategy, terraform-plan]
-    environment: 
-      name: ${{ needs.determine-strategy.outputs.environment }}
-      url: ${{ steps.deploy-url.outputs.url }}
+    environment: ${{ needs.determine-strategy.outputs.environment }}
     
     if: needs.determine-strategy.outputs.should_deploy == 'true'
     
@@ -468,25 +466,6 @@ jobs:
           echo "🚀 Deploying to ${{ needs.determine-strategy.outputs.environment }} (${{ needs.determine-strategy.outputs.deployment_type }})"
           echo "Using variables file: ${{ needs.determine-strategy.outputs.tf_vars_file }}"
           terraform apply -auto-approve tfplan
-
-      - name: Set Deployment URL
-        id: deploy-url
-        run: |
-          # Set environment-specific URL for deployment tracking
-          case "${{ needs.determine-strategy.outputs.environment }}" in
-            "production")
-              echo "url=https://${{ secrets.AUTH0_DOMAIN }}/dashboard" >> $GITHUB_OUTPUT
-              ;;
-            "staging")
-              echo "url=https://${{ secrets.AUTH0_DOMAIN }}/dashboard" >> $GITHUB_OUTPUT
-              ;;
-            "development")
-              echo "url=https://${{ secrets.AUTH0_DOMAIN }}/dashboard" >> $GITHUB_OUTPUT
-              ;;
-            *)
-              echo "url=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
-              ;;
-          esac
 
       - name: Generate Deployment Summary
         run: |
