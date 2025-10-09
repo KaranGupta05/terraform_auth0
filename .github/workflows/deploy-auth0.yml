@@ -133,6 +133,7 @@ jobs:
             TF_VARS_FILE="config/prod.tfvars"
             SHOULD_DEPLOY="true"
             DEPLOYMENT_TYPE="release"
+            CREATE_TAG="true"
             
           # Branch-based deployments
           elif [[ "${{ github.event_name }}" == "push" ]]; then
