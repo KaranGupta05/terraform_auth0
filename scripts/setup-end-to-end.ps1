@@ -39,12 +39,12 @@ if ($gitRemote -and $gitRemote -match "github\.com[/:](.*?)/(.*?)(?:\.git)?$") {
 
 # Check if the auto-detected repo exists - we'll use the corrected name as default
 if ([string]::IsNullOrWhiteSpace($autoDetectedRepo)) {
-    $defaultRepoUrl = "KaranGupta05/terraform_auth0"
+    $defaultRepoUrl = "KaranGupta05/terrform_auth0"
 } else {
     # Auto-detected repo may have different spelling - suggest the actual GitHub repo name
     if ($autoDetectedRepo -eq "KaranGupta05/terraform_auth0") {
-        Write-Host "⚠️ Auto-detected '$autoDetectedRepo' - suggesting actual GitHub repo name" -ForegroundColor Yellow
-        $defaultRepoUrl = "KaranGupta05/terraform_auth0"
+        Write-Host "⚠️ Auto-detected '$autoDetectedRepo' - using actual GitHub repo name" -ForegroundColor Yellow
+        $defaultRepoUrl = "KaranGupta05/terrform_auth0"
     } else {
         $defaultRepoUrl = $autoDetectedRepo
     }
@@ -386,12 +386,12 @@ Write-Step "Validating Current Setup"
 
 # Check required files
 $requiredFiles = @{
-    ".github/workflows/deploy-auth0.yml" = "GitHub Actions workflow"
-    "config/dev.tfvars" = "Development environment variables"
-    "config/qa.tfvars" = "Staging environment variables"
-    "config/prod.tfvars" = "Production environment variables"
-    "main.tf" = "Terraform main configuration"
-    "variables.tf" = "Terraform variables"
+    "../.github/workflows/deploy-auth0.yml" = "GitHub Actions workflow"
+    "../config/dev.tfvars" = "Development environment variables"
+    "../config/qa.tfvars" = "Staging environment variables"
+    "../config/prod.tfvars" = "Production environment variables"
+    "../main.tf" = "Terraform main configuration"
+    "../variables.tf" = "Terraform variables"
 }
 
 $allFilesExist = $true
@@ -414,7 +414,7 @@ if ($TestLocalDeploy) {
     Write-Step "Testing Local Terraform Deployment"
     
     # Check if terraform.tfvars exists with credentials
-    if (-not (Test-Path "terraform.tfvars")) {
+    if (-not (Test-Path "../terraform.tfvars")) {
         Write-Error "terraform.tfvars not found. Please create it with your Auth0 credentials."
         Write-Host "Required format:" -ForegroundColor Yellow
         Write-Host 'auth0_domain = "your-domain.us.auth0.com"' -ForegroundColor Gray
@@ -424,6 +424,9 @@ if ($TestLocalDeploy) {
     }
     
     try {
+        # Change to parent directory for terraform commands
+        Push-Location ".."
+        
         # Initialize Terraform
         Write-Host "Initializing Terraform..." -ForegroundColor Cyan
         terraform init
@@ -440,7 +443,7 @@ if ($TestLocalDeploy) {
                 
                 # Run plan
                 Write-Host "Running Terraform plan for $Environment environment..." -ForegroundColor Cyan
-                terraform plan -var-file="$Environment.tfvars"
+                terraform plan -var-file="config/$Environment.tfvars"
                 
                 if ($LASTEXITCODE -eq 0) {
                     Write-Success "Terraform plan completed successfully"
@@ -455,6 +458,9 @@ if ($TestLocalDeploy) {
         }
     } catch {
         Write-Error "Local deployment test failed: $_"
+    } finally {
+        # Return to scripts directory
+        Pop-Location
     }
 }
 
