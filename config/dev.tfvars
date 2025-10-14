@@ -1,4 +1,5 @@
 # i making some changes in dev
+# this is the second change
 # Tenant Configuration
 tenant_friendly_name = "CDW"
 tenant_support_email = "support@CDW.com"
