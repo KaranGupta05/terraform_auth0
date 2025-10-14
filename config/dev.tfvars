@@ -1,5 +1,4 @@
-#I am making changes in dev site
-
+# i making some changes in dev
 # Tenant Configuration
 tenant_friendly_name = "CDW"
 tenant_support_email = "support@CDW.com"
@@ -27,101 +26,97 @@ create_log_stream = false
 enable_enhanced_breach_detection = false
 enable_breach_detection = false
 
-# Application Creation Settings
-skip_existing_applications = false
-skip_existing_resource_servers = true
-
 # Application definitions
 applications = {
   main_app_new = {
-    name        = "cdw Main App New app"
+    name        = "ITCyberSecSol Main App New app"
     type        = "spa"
     description = "Main customer portal application New app"
     callbacks   = [
       "http://localhost:3000/callback",
-      "https://main.cdw.com/callback"
+      "https://main.itcybersecsol.com/callback"
     ]
     logout_urls = [
       "http://localhost:3000",
-      "https://main.cdw.com"
+      "https://main.itcybersecsol.com"
     ]
     allowed_origins = [
       "http://localhost:3000",
-      "https://main.cdw.com"
+      "https://main.itcybersecsol.com"
     ]
     web_origins = [
       "http://localhost:3000",
-      "https://main.cdw.com"
+      "https://main.itcybersecsol.com"
     ]
   },
   main_app = {
-    name        = "cdw Main App"
+    name        = "ITCyberSecSol Main App"
     type        = "spa"
     description = "Main customer portal application"
     callbacks   = [
       "http://localhost:3000/callback",
-      "https://main.cdw.com/callback"
+      "https://main.itcybersecsol.com/callback"
     ]
     logout_urls = [
       "http://localhost:3000",
-      "https://main.cdw.com"
+      "https://main.itcybersecsol.com"
     ]
     allowed_origins = [
       "http://localhost:3000",
-      "https://main.cdw.com"
+      "https://main.itcybersecsol.com"
     ]
     web_origins = [
       "http://localhost:3000",
-      "https://main.cdw.com"
+      "https://main.itcybersecsol.com"
     ]
   },
   admin_dashboard = {
-    name        = "cdw Admin Dashboard"
+    name        = "ITCyberSecSol Admin Dashboard"
     type        = "spa"
     description = "Administrative dashboard application"
     callbacks   = [
       "http://localhost:3001/callback",
-      "https://admin.cdw.com/callback"
+      "https://admin.itcybersecsol.com/callback"
     ]
     logout_urls = [
       "http://localhost:3001",
-      "https://admin.cdw.com"
+      "https://admin.itcybersecsol.com"
     ]
     allowed_origins = [
       "http://localhost:3001",
-      "https://admin.cdw.com"
+      "https://admin.itcybersecsol.com"
     ]
     web_origins = [
       "http://localhost:3001",
-      "https://admin.cdw.com"
+      "https://admin.itcybersecsol.com"
     ]
   },
   admin_test_app = {
-    name        = "cdw Admin test app"
+    name        = "ITCyberSecSol Admin test app"
     type        = "spa"
     description = "Administrative dashboard application"
     callbacks   = [
       "http://localhost:5001/callback",
-      "https://admin.cdw1.com/callback"
+      "https://admin.itcybersecsol1.com/callback"
     ]
     logout_urls = [
       "http://localhost:5001",
-      "https://admin.cdw1.com"
+      "https://admin.itcybersecsol1.com"
     ]
     allowed_origins = [
       "http://localhost:5001",
-      "https://admin.cdw1.com"
+      "https://admin.itcybersecsol1.com"
     ]
     web_origins = [
       "http://localhost:5001",
-      "https://admin.cdw1.com"
+      "https://admin.itcybersecsol1.com"
     ]
   },
   main_api = {
-    name         = "cdw Main API"
+    name         = "ITCyberSecSol Main API"
     type         = "api"
     description  = "Main backend API service"
-    api_identifier = "https://api.cdw2.com"
+    api_identifier = "https://api.itcybersecsol2.com"
     api_scopes   = [
       {
         name        = "read:users"
@@ -134,10 +129,10 @@ applications = {
     ]
   },
   admin_api = {
-    name         = "cdw Admin API"
+    name         = "ITCyberSecSol Admin API"
     type         = "api"
     description  = "Administrative API service"
-    api_identifier = "https://admin-api.cdw2.com"
+    api_identifier = "https://admin-api.itcybersecsol2.com"
     api_scopes   = [
       {
         name        = "read:admin"
@@ -150,4 +145,3 @@ applications = {
     ]
   }
 }
-# Test comment to trigger deployment
